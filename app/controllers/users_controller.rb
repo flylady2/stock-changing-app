@@ -21,16 +21,20 @@ class UsersController < ApplicationController
 
   post '/users' do
     user = User.new(params)
-    #binding.pry
+    if user.email != "" && !user.valid?
+      flash[:message] = "That email is already taken."
+      redirect '/signup'
+    end
     if user.name != "" && user.email != "" && user.password != nil
       user.save
-      session[:user_id] = user.id #logging new user in
+      session[:user_id] = user.id
       redirect "/users/#{user.id}"
     else
       flash[:message] = "You must have a valid name, email and password. Please try again."
-      redirect '/signup' #need to add a failure message
+      redirect '/signup'
     end
   end
+
 
   get '/users/:id' do
     @user = User.find_by(id: params[:id])
