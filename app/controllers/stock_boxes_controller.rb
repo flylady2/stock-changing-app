@@ -2,13 +2,9 @@ class StockBoxesController < ApplicationController
 
 
   get '/stock_boxes' do
-    if logged_in?
-      @stock_boxes = current_user.stock_boxes
-      erb :'stock_boxes/index'
-    else
-      flash[:message] = "You must be logged into see stock boxes."
-      redirect '/login'
-    end
+    not_logged_in
+    @stock_boxes = current_user.stock_boxes
+    erb :'stock_boxes/index'
   end
 
   get '/stock_boxes/new' do
@@ -44,13 +40,12 @@ class StockBoxesController < ApplicationController
    get "/stock_boxes/:id/edit" do
      @stock_box = StockBox.find(params[:id])
      @stocks = @stock_box.stocks
-      if logged_in?
-        if @stock_box.user == current_user
-          erb :'/stock_boxes/edit'
-        else
-          flash[:message] = "You are not authorized to edit this stock box."
-          redirect "/stock_boxes/#{@stock_box.id}"
-        end
+     not_logged_in
+     if @stock_box.user == current_user
+       erb :'/stock_boxes/edit'
+      else
+        flash[:message] = "You are not authorized to edit this stock box."
+        redirect "/stock_boxes/#{@stock_box.id}"
       end
     end
 
